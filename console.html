@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Console · GATHER</title>
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" type="image/png" href="assets/img/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container" style="width:100%;max-width:none;padding:0 20px">
+    <a class="brand" href="index.html">
+      <img src="assets/img/gather-mark-cyan.png" alt="Logo Gather">
+      GATHER <small>Console 0.1</small>
+    </a>
+    <button class="nav-toggle" aria-label="Abrir menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <div class="nav-links">
+      <a href="index.html">Início</a>
+      <a href="docs.html">Docs</a>
+      <span class="pill ok" id="engine-pill">engine online</span>
+    </div>
+  </div>
+</nav>
+
+<div class="console">
+  <aside class="sidebar" id="sidebar">
+    <div class="label">Geral</div>
+    <button data-view="visao"><span class="ico">◈</span>Visão geral</button>
+    <div class="label">Construir</div>
+    <button data-view="criar"><span class="ico">+</span>Criar API</button>
+    <button data-view="catalogo"><span class="ico">≡</span>Catálogo<span class="count" id="c-apis">0</span></button>
+    <button data-view="roteador"><span class="ico">⌖</span>Roteador de IAs</button>
+    <div class="label">Operar</div>
+    <button data-view="credenciais"><span class="ico">⚿</span>Credenciais<span class="count" id="c-keys">0</span></button>
+    <button data-view="playground"><span class="ico">▷</span>Playground</button>
+    <button data-view="monitor"><span class="ico">◉</span>Monitor</button>
+    <div class="label">Sistema</div>
+    <button data-view="config"><span class="ico">⚙</span>Configurações</button>
+  </aside>
+
+  <main class="main">
+
+    <!-- ================= VISÃO GERAL ================= -->
+    <section class="view" id="view-visao">
+      <div class="view-head">
+        <div><h1>Visão geral</h1><p>Estado atual das APIs orquestradas pela Gather.</p></div>
+        <a class="btn" href="#criar">+ Nova API</a>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><span>APIs registradas</span><b id="k-apis">0</b></div>
+        <div class="kpi"><span>Publicadas</span><b id="k-pub">0</b></div>
+        <div class="kpi"><span>Endpoints</span><b id="k-eps">0</b></div>
+        <div class="kpi"><span>Credenciais ativas</span><b id="k-keys">0</b></div>
+      </div>
+      <div class="split">
+        <div class="panel">
+          <h3>APIs por IA consumidora</h3>
+          <div id="by-ai"></div>
+        </div>
+        <div class="panel">
+          <h3>Atividade da Gather</h3>
+          <div class="log" id="activity"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CRIAR ================= -->
+    <section class="view" id="view-criar">
+      <div class="view-head">
+        <div><h1>Criar API</h1><p>Descreva a necessidade. A Gather monta a API; você revisa e registra.</p></div>
+      </div>
+
+      <div class="panel">
+        <h3><span class="n">01</span>Pedido em linguagem natural</h3>
+        <div class="prompt-box">
+          <textarea id="prompt" placeholder='Ex.: "API de cotações em tempo real para o Miquéias listar ativos e consultar preços"'></textarea>
+          <button class="btn" id="btn-gerar">Gerar com Gather ⏎</button>
+        </div>
+        <div class="chips" id="chips"></div>
+        <div class="log mt" id="think" style="height:auto;max-height:180px;display:none"></div>
+      </div>
+
+      <div class="panel">
+        <h3><span class="n">02</span>Definição</h3>
+        <div class="row">
+          <div class="field"><label>NOME</label><input id="f-name" placeholder="Nome da API"></div>
+          <div class="field"><label>IA CONSUMIDORA</label><select id="f-consumer"></select></div>
+          <div class="field"><label>AUTENTICAÇÃO</label>
+            <select id="f-auth">
+              <option value="apiKey">API Key (X-Gather-Key)</option>
+              <option value="bearer">Bearer / JWT</option>
+              <option value="oauth2">OAuth2 (client credentials)</option>
+              <option value="none">Pública</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field"><label>VERSÃO</label><input id="f-version" value="0.1.0"></div>
+          <div class="field"><label>RATE LIMIT (REQ/MIN)</label><input id="f-rate" type="number" min="1" value="120"></div>
+          <div class="field" style="grid-column: span 2"><label>BASE URL</label><input id="f-base" placeholder="gerada automaticamente"></div>
+        </div>
+        <div class="field"><label>DESCRIÇÃO</label><textarea id="f-desc" style="min-height:60px"></textarea></div>
+      </div>
+
+      <div class="panel">
+        <h3><span class="n">03</span>Recursos e campos <span class="spacer"></span><button class="btn sm ghost" id="btn-add-res">+ recurso</button></h3>
+        <p class="hint" style="margin-top:-6px">Um recurso por linha no formato <code>nome: campo:tipo, campo:tipo</code>. Tipos: string, number, integer, boolean, datetime.</p>
+        <textarea id="f-resources" class="mono" style="min-height:110px;font-family:var(--mono);font-size:13px"></textarea>
+      </div>
+
+      <div class="panel">
+        <h3><span class="n">04</span>Endpoints <span class="spacer"></span><button class="btn sm ghost" id="btn-crud">+ CRUD dos recursos</button><button class="btn sm ghost" id="btn-add-ep">+ endpoint</button></h3>
+        <div class="ep-list" id="ep-list"></div>
+      </div>
+
+      <div class="panel">
+        <h3><span class="n">05</span>Artefatos gerados <span class="spacer"></span><button class="btn sm ghost" id="btn-dl">Baixar arquivo</button></h3>
+        <div class="tabs" id="out-tabs">
+          <button data-out="openapi" class="active">openapi.json</button>
+          <button data-out="tools">gather.tools.json</button>
+          <button data-out="server">server.js</button>
+          <button data-out="js">client.js</button>
+          <button data-out="py">client.py</button>
+        </div>
+        <div class="code-wrap">
+          <button class="btn sm ghost copy-btn" data-copy="#out-code">Copiar</button>
+          <pre class="code" id="out-code"></pre>
+        </div>
+      </div>
+
+      <div class="flex">
+        <button class="btn" id="btn-register">Registrar no catálogo</button>
+        <button class="btn ghost" id="btn-register-pub">Registrar e publicar</button>
+        <span class="spacer"></span>
+        <button class="btn danger" id="btn-reset">Limpar</button>
+      </div>
+    </section>
+
+    <!-- ================= CATÁLOGO ================= -->
+    <section class="view" id="view-catalogo">
+      <div class="view-head">
+        <div><h1>Catálogo de APIs</h1><p>Registro central de todas as APIs da Nathanael Industries.</p></div>
+        <div class="flex">
+          <input id="cat-search" placeholder="Buscar…" style="width:200px">
+          <select id="cat-filter" style="width:170px"></select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>API</th><th>Consumidor</th><th>Versão</th><th>Endpoints</th><th>Auth</th><th>Status</th><th></th></tr></thead>
+          <tbody id="cat-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================= ROTEADOR ================= -->
+    <section class="view" id="view-roteador">
+      <div class="view-head">
+        <div><h1>Roteador de IAs</h1><p>Uma IA descreve o que precisa; a Gather seleciona a API compatível ou propõe criar uma nova.</p></div>
+      </div>
+      <div class="panel">
+        <div class="row">
+          <div class="field"><label>IA SOLICITANTE</label><select id="r-ai"></select></div>
+          <div class="field" style="grid-column: span 3"><label>NECESSIDADE</label><input id="r-need" placeholder='Ex.: "preciso consultar o preço do BTC"'></div>
+        </div>
+        <button class="btn" id="btn-route">Selecionar API</button>
+      </div>
+      <div id="route-out"></div>
+    </section>
+
+    <!-- ================= CREDENCIAIS ================= -->
+    <section class="view" id="view-credenciais">
+      <div class="view-head">
+        <div><h1>Credenciais</h1><p>Chaves de acesso emitidas por IA. A chave completa só é exibida uma vez; a Gather guarda apenas o hash SHA-256.</p></div>
+      </div>
+      <div class="panel">
+        <h3>Emitir nova chave</h3>
+        <div class="row">
+          <div class="field"><label>IA</label><select id="k-ai"></select></div>
+          <div class="field"><label>API</label><select id="k-api"></select></div>
+          <div class="field"><label>ESCOPO</label>
+            <select id="k-scope"><option value="read">leitura</option><option value="write">leitura + escrita</option><option value="admin">admin</option></select>
+          </div>
+          <div class="field"><label>EXPIRA EM</label>
+            <select id="k-exp"><option value="30">30 dias</option><option value="90">90 dias</option><option value="365">1 ano</option><option value="0">nunca</option></select>
+          </div>
+        </div>
+        <button class="btn" id="btn-issue">Emitir chave</button>
+        <div id="new-key" class="mt"></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Chave</th><th>IA</th><th>API</th><th>Escopo</th><th>Expira</th><th>Usos</th><th>Status</th><th></th></tr></thead>
+          <tbody id="keys-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================= PLAYGROUND ================= -->
+    <section class="view" id="view-playground">
+      <div class="view-head">
+        <div><h1>Playground</h1><p>Teste os endpoints com respostas simuladas pela Gather antes do deploy.</p></div>
+      </div>
+      <div class="split">
+        <div class="panel">
+          <div class="field"><label>API</label><select id="p-api"></select></div>
+          <div class="field"><label>ENDPOINT</label><select id="p-ep"></select></div>
+          <div class="field" id="p-params-wrap"><label>PARÂMETROS DE ROTA</label><input id="p-params" placeholder="id=abc123"></div>
+          <div class="field"><label>X-GATHER-KEY</label><input id="p-key" placeholder="gth_live_…" class="mono"></div>
+          <div class="field" id="p-body-wrap"><label>CORPO (JSON)</label><textarea id="p-body" class="mono" style="font-family:var(--mono);font-size:13px">{}</textarea></div>
+          <button class="btn" id="btn-send">Enviar requisição</button>
+        </div>
+        <div>
+          <div class="flex" style="margin-bottom:10px"><span id="p-status" class="pill">aguardando</span><span id="p-lat" class="mono muted" style="font-size:12px"></span></div>
+          <pre class="code" id="p-out" style="min-height:260px">// a resposta aparece aqui</pre>
+          <div class="mt"><div class="hint">cURL equivalente</div><pre class="code" id="p-curl" style="margin-top:6px"></pre></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MONITOR ================= -->
+    <section class="view" id="view-monitor">
+      <div class="view-head">
+        <div><h1>Monitor</h1><p>Disponibilidade e desempenho das APIs publicadas (simulação local na v0.1).</p></div>
+        <button class="btn ghost" id="btn-mon">Pausar</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>API</th><th>Status</th><th>Uptime</th><th>Latência p50</th><th>Erros</th><th>Tendência</th></tr></thead>
+          <tbody id="mon-body"></tbody>
+        </table>
+      </div>
+      <div class="panel mt"><h3>Eventos</h3><div class="log" id="mon-log"></div></div>
+    </section>
+
+    <!-- ================= CONFIG ================= -->
+    <section class="view" id="view-config">
+      <div class="view-head"><div><h1>Configurações</h1><p>Dados do console ficam no navegador (localStorage) nesta versão.</p></div></div>
+      <div class="panel">
+        <h3>Backup</h3>
+        <div class="flex">
+          <button class="btn ghost" id="btn-export">Exportar registro (JSON)</button>
+          <label class="btn ghost" style="cursor:pointer">Importar registro<input type="file" id="imp-file" accept="application/json" hidden></label>
+          <button class="btn ghost" id="btn-seed">Carregar exemplos</button>
+          <span class="spacer"></span>
+          <button class="btn danger" id="btn-wipe">Apagar tudo</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Identidade</h3>
+        <div class="flex" style="gap:28px">
+          <img src="assets/img/gather-logo-cyan.png" alt="Gather ciano" style="height:56px">
+          <img src="assets/img/gather-logo-white.png" alt="Gather branco" style="height:56px">
+        </div>
+        <p class="hint mt">Gather 0.1 · Gerenciadora e orquestradora de APIs · Categoria Desenvolvedores · Nathanael Industries</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Modal de detalhes -->
+<div class="modal" id="modal">
+  <div class="box">
+    <header><h2 id="m-title"></h2><button class="btn sm ghost" id="m-close">Fechar ✕</button></header>
+    <div id="m-meta" class="flex" style="margin-bottom:14px"></div>
+    <div class="tabs" id="m-tabs">
+      <button data-out="endpoints" class="active">endpoints</button>
+      <button data-out="openapi">openapi.json</button>
+      <button data-out="tools">gather.tools.json</button>
+      <button data-out="server">server.js</button>
+      <button data-out="js">client.js</button>
+      <button data-out="py">client.py</button>
+    </div>
+    <div class="code-wrap" id="m-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/gather-engine.js"></script>
+<script src="assets/js/console.js"></script>
+</body>
+</html>

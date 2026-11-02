@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Documentação · GATHER</title>
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" type="image/png" href="assets/img/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .docs { display: grid; grid-template-columns: 220px 1fr; gap: 40px; padding: 40px 0 80px; }
+    .toc { position: sticky; top: 88px; align-self: start; display: grid; gap: 4px; }
+    .toc a { color: var(--muted); font-size: 14px; padding: 4px 10px; border-left: 2px solid var(--line); }
+    .toc a:hover { color: var(--cyan); border-left-color: var(--cyan); text-decoration: none; }
+    .doc h2 { font-size: 26px; margin: 48px 0 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .doc h2:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+    .doc h3 { margin: 28px 0 8px; color: var(--cyan); font-size: 16px; font-family: var(--mono); }
+    .doc p, .doc li { color: var(--muted); }
+    .doc code { color: var(--cyan); background: var(--cyan-soft); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+    .doc pre code { background: none; padding: 0; color: inherit; }
+    .doc table { margin: 10px 0; }
+    .doc td { white-space: normal; color: var(--muted); }
+    @media (max-width: 860px) { .docs { grid-template-columns: 1fr; } .toc { position: static; grid-auto-flow: column; overflow-x: auto; } .toc a { white-space: nowrap; } }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container">
+    <a class="brand" href="index.html">
+      <img src="assets/img/gather-mark-cyan.png" alt="Logo Gather">
+      GATHER <small>Docs</small>
+    </a>
+    <button class="nav-toggle" aria-label="Abrir menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <div class="nav-links">
+      <a href="index.html">Início</a>
+      <a href="docs.html" class="active">Docs</a>
+      <a class="btn sm" href="console.html">Abrir Console →</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container docs">
+  <nav class="toc">
+    <a href="#visao">Visão geral</a>
+    <a href="#pedido">Escrevendo um pedido</a>
+    <a href="#artefatos">Artefatos</a>
+    <a href="#manifesto">Manifesto de tools</a>
+    <a href="#auth">Autenticação</a>
+    <a href="#erros">Erros</a>
+    <a href="#roteador">Roteador</a>
+    <a href="#convencoes">Convenções</a>
+    <a href="#limites">Limites da v0.1</a>
+  </nav>
+
+  <article class="doc">
+    <h2 id="visao">Visão geral</h2>
+    <p>
+      A <b>Gather 0.1</b> é a IA da categoria <b>Desenvolvedores</b> da Nathanael Industries responsável por criar,
+      registrar e orquestrar as APIs usadas pelas outras IAs — Horácio (HoV 1.1), Miquéias (JpG 1.0) e Asafe (0.1).
+      O Asafe cuida dos servidores onde as APIs rodam; a Gather cuida do contrato, das credenciais e da integração.
+    </p>
+    <table>
+      <thead><tr><th>Função</th><th>Onde no console</th></tr></thead>
+      <tbody>
+        <tr><td>Registro e gerenciamento de APIs</td><td>Catálogo</td></tr>
+        <tr><td>Criação de APIs a partir de uma necessidade</td><td>Criar API</td></tr>
+        <tr><td>Integração de serviços e ferramentas</td><td>Manifesto <code>gather.tools.json</code></td></tr>
+        <tr><td>Gerenciamento de credenciais de acesso</td><td>Credenciais</td></tr>
+        <tr><td>Monitoramento de disponibilidade e desempenho</td><td>Monitor</td></tr>
+        <tr><td>Seleção de APIs conforme a necessidade das IAs</td><td>Roteador de IAs</td></tr>
+        <tr><td>Compatibilidade entre serviços</td><td>OpenAPI 3.1 + convenções abaixo</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="pedido">Escrevendo um pedido</h2>
+    <p>O motor identifica no texto:</p>
+    <ul>
+      <li><b>IA consumidora</b> — pelo nome (Horácio, Miquéias, Asafe) ou palavras como “trading”, “infraestrutura”. Sem menção, a API fica para todas as IAs.</li>
+      <li><b>Recursos</b> — cotações, ativos, ordens, carteiras, tarefas, eventos/agenda, lembretes, notificações, mensagens, cálculos, relatórios, servidores, logs, agentes, permissões, usuários, arquivos, registros, clima, notícias, pagamentos. Termos desconhecidos viram um recurso genérico.</li>
+      <li><b>Operações</b> — listar, consultar, criar, atualizar, remover. “Gerenciar” ou “CRUD” gera todas.</li>
+      <li><b>Autenticação</b> — padrão API Key; “JWT”/“token” → Bearer; “OAuth” → OAuth2; “pública” → sem auth.</li>
+      <li><b>Extras</b> — “tempo real” adiciona stream SSE; “webhook” adiciona registro de webhooks.</li>
+      <li><b>Nome</b> — texto entre aspas vira o nome da API.</li>
+    </ul>
+<pre class="code">"Painel Trader" — API de ordens e carteiras em tempo real para o Miquéias, com webhook</pre>
+
+    <h2 id="artefatos">Artefatos</h2>
+    <table>
+      <thead><tr><th>Arquivo</th><th>Conteúdo</th></tr></thead>
+      <tbody>
+        <tr><td><code>openapi.json</code></td><td>Contrato OpenAPI 3.1 com schemas, segurança e metadados <code>x-nathanael-industries</code>.</td></tr>
+        <tr><td><code>gather.tools.json</code></td><td>Lista de ferramentas com <code>input_schema</code> (JSON Schema) para as IAs chamarem a API.</td></tr>
+        <tr><td><code>server.js</code></td><td>Servidor Node.js/Express funcional (armazenamento em memória, auth, rate limit, health).</td></tr>
+        <tr><td><code>client.js</code></td><td>Cliente JavaScript (ESM, <code>fetch</code>).</td></tr>
+        <tr><td><code>client.py</code></td><td>Cliente Python (<code>requests</code>).</td></tr>
+      </tbody>
+    </table>
+<pre class="code"><span class="c"># rodar o servidor gerado</span>
+npm i express
+GATHER_KEYS=gth_live_suaChave node server.js</pre>
+
+    <h2 id="manifesto">Manifesto de tools</h2>
+    <p>Formato que qualquer IA da NI carrega para conhecer a API:</p>
+<pre class="code">{
+  "gather": "0.1",
+  "api": "&lt;slug&gt;",
+  "version": "0.1.0",
+  "consumidor": "miqueias",
+  "baseUrl": "https://api.nathanael.industries/&lt;slug&gt;/v1",
+  "auth": { "type": "apiKey", "header": "X-Gather-Key", "credencial": "gather://credenciais/&lt;slug&gt;" },
+  "tools": [
+    {
+      "name": "&lt;slug&gt;_listar_cotacoes",
+      "description": "Listar cotações — GET /cotacoes",
+      "input_schema": { "type": "object", "properties": { ... }, "required": [ ... ] },
+      "x-http": { "method": "GET", "path": "/cotacoes" }
+    }
+  ]
+}</pre>
+    <p>
+      Para executar uma tool, a IA monta a requisição com <code>x-http</code>: parâmetros entre chaves no caminho
+      (<code>{id}</code>) saem do input; em <code>GET</code> o restante vira query string; em <code>POST/PATCH</code> vira o corpo JSON.
+    </p>
+
+    <h2 id="auth">Autenticação</h2>
+    <p>As chaves são emitidas em <b>Credenciais</b>, vinculadas a uma IA, uma API (ou todas) e um escopo:</p>
+    <table>
+      <tbody>
+        <tr><td><code>read</code></td><td>Apenas <code>GET</code>.</td></tr>
+        <tr><td><code>write</code></td><td>Leitura e escrita.</td></tr>
+        <tr><td><code>admin</code></td><td>Tudo, incluindo operações administrativas futuras.</td></tr>
+      </tbody>
+    </table>
+<pre class="code">curl https://api.nathanael.industries/&lt;slug&gt;/v1/cotacoes \
+  -H "X-Gather-Key: gth_live_..."</pre>
+    <p>A chave completa aparece uma única vez. O console guarda somente o hash SHA-256, prefixo e sufixo.</p>
+
+    <h2 id="erros">Erros</h2>
+    <table>
+      <thead><tr><th>HTTP</th><th>Código</th><th>Significado</th></tr></thead>
+      <tbody>
+        <tr><td>400</td><td><code>GATHER_400</code></td><td>Requisição inválida (JSON ou expressão).</td></tr>
+        <tr><td>401</td><td><code>GATHER_401</code></td><td>Chave ausente, inválida, revogada ou expirada.</td></tr>
+        <tr><td>403</td><td><code>GATHER_403</code></td><td>Chave sem permissão para a API ou para o método.</td></tr>
+        <tr><td>404</td><td><code>GATHER_404</code></td><td>Recurso não encontrado.</td></tr>
+        <tr><td>429</td><td><code>GATHER_429</code></td><td>Rate limit excedido.</td></tr>
+      </tbody>
+    </table>
+<pre class="code">{ "erro": "Chave inválida", "codigo": "GATHER_401" }</pre>
+
+    <h2 id="roteador">Roteador</h2>
+    <p>
+      Quando uma IA descreve uma necessidade, a Gather interpreta o pedido, compara os recursos e termos com as APIs do catálogo
+      e pontua cada uma (recursos em comum, termos, permissão da IA e status de publicação). Se nada atende, propõe criar a API.
+    </p>
+
+    <h2 id="convencoes">Convenções</h2>
+    <ul>
+      <li>Rotas em português, plural e sem acento: <code>/cotacoes</code>, <code>/tarefas/{id}</code>.</li>
+      <li>Listagens retornam <code>{ "dados": [...], "total": n }</code> com <code>?limite=&amp;pagina=</code>.</li>
+      <li>Criação responde <code>201</code>; remoção responde <code>204</code>.</li>
+      <li>Toda API expõe <code>GET /health</code> sem autenticação.</li>
+      <li>Base URL: <code>https://api.nathanael.industries/&lt;slug&gt;/v&lt;major&gt;</code>.</li>
+    </ul>
+
+    <h2 id="limites">Limites da v0.1</h2>
+    <ul>
+      <li>O console roda inteiro no navegador; catálogo e credenciais ficam no <code>localStorage</code>. Use Exportar/Importar para backup.</li>
+      <li>O Playground e o Monitor usam respostas e métricas simuladas — ainda não há deploy real.</li>
+      <li>A interpretação de pedidos é por regras (dicionário de recursos e ações). Geração por LLM está prevista para a 0.3.</li>
+      <li>Deploy real das APIs depende do Asafe (infraestrutura), previsto para a 0.2.</li>
+    </ul>
+  </article>
+</div>
+
+<footer>
+  <div class="container">
+    <img src="assets/img/gather-logo-white.png" alt="Gather">
+    <span>Nathanael Industries · Gather 0.1</span>
+  </div>
+</footer>
+</body>
+</html>

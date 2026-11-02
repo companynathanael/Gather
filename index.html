@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GATHER · Nathanael Industries</title>
+  <meta name="description" content="Gather 0.1 — a IA da Nathanael Industries que cria, registra e orquestra APIs para as demais IAs.">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" type="image/png" href="assets/img/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container">
+    <a class="brand" href="index.html">
+      <img src="assets/img/gather-mark-cyan.png" alt="Logo Gather">
+      GATHER <small>NI · Developers</small>
+    </a>
+    <button class="nav-toggle" aria-label="Abrir menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <div class="nav-links">
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#ias">IAs</a>
+      <a href="#integracao">Integração</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="docs.html">Docs</a>
+      <a class="btn sm" href="console.html">Abrir Console →</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero grid-bg">
+  <div class="container">
+    <div>
+      <div class="eyebrow">Nathanael Industries · Desenvolvedores · v0.1</div>
+      <h1>A IA que cria <span>APIs</span> para as outras IAs.</h1>
+      <p class="lead">
+        A Gather recebe uma necessidade — em linguagem natural ou por formulário — e entrega uma API pronta:
+        especificação OpenAPI, servidor, clientes, credenciais e o manifesto de ferramentas que
+        Horácio, Miquéias e Asafe usam para se conectar.
+      </p>
+      <div class="actions">
+        <a class="btn" href="console.html#criar">Criar uma API agora</a>
+        <a class="btn ghost" href="docs.html">Ler a documentação</a>
+      </div>
+    </div>
+    <img class="hero-mark" src="assets/img/gather-mark-cyan.png" alt="Símbolo da Gather">
+  </div>
+  <div class="container">
+    <div class="stats">
+      <div class="stat"><b id="st-apis">0</b><span>APIs registradas</span></div>
+      <div class="stat"><b id="st-eps">0</b><span>Endpoints gerados</span></div>
+      <div class="stat"><b>4</b><span>IAs conectáveis</span></div>
+      <div class="stat"><b>6</b><span>Artefatos por API</span></div>
+    </div>
+  </div>
+</header>
+
+<section class="block">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Responsabilidades</div>
+      <h2>O que a Gather faz</h2>
+      <p>Gerenciadora e orquestradora de APIs da Nathanael Industries. Cada função abaixo já tem uma área no console.</p>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="icon">+</div><h3>Criação de APIs</h3><p>Descreva o que a IA precisa; a Gather define recursos, rotas, autenticação e gera o código.</p></div>
+      <div class="card"><div class="icon">≡</div><h3>Registro e gerenciamento</h3><p>Catálogo central com versão, consumidor, status e base URL de cada API.</p></div>
+      <div class="card"><div class="icon">⇄</div><h3>Integração de serviços</h3><p>Manifesto de ferramentas (tools) pronto para qualquer IA chamar a API diretamente.</p></div>
+      <div class="card"><div class="icon">⚿</div><h3>Credenciais de acesso</h3><p>Emissão de chaves <code>X-Gather-Key</code> por IA, com escopo, revogação e registro de uso.</p></div>
+      <div class="card"><div class="icon">◉</div><h3>Monitoramento</h3><p>Disponibilidade, latência e taxa de erro de cada API publicada.</p></div>
+      <div class="card"><div class="icon">⌖</div><h3>Seleção e compatibilidade</h3><p>Roteador que indica qual API atende a necessidade de cada IA e padroniza formatos.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="como-funciona">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Pipeline</div>
+      <h2>Da necessidade à API publicada</h2>
+      <p>Uma IA (ou o Sr. Nathanael) pede uma capacidade. A Gather transforma o pedido em uma API completa.</p>
+    </div>
+    <div class="flow">
+      <div class="step"><h4>Pedido</h4><p>“Miquéias precisa de cotações em tempo real.”</p></div>
+      <div class="step"><h4>Interpretação</h4><p>Consumidor, recursos, operações, auth e extras são identificados.</p></div>
+      <div class="step"><h4>Geração</h4><p>OpenAPI 3.1, servidor Express, clientes JS/Python e tools.</p></div>
+      <div class="step"><h4>Credencial</h4><p>Chave emitida para a IA consumidora com escopo da API.</p></div>
+      <div class="step"><h4>Publicação</h4><p>Registro no catálogo e monitoramento contínuo.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="ias">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Ecossistema NI</div>
+      <h2>IAs atendidas pela Gather</h2>
+      <p>Toda IA da Nathanael Industries consome APIs através da Gather. A infraestrutura que as hospeda é mantida pelo Asafe.</p>
+    </div>
+    <div class="ai-grid">
+      <div class="ai"><span class="tag">Auxiliar</span><h4>Horácio</h4><div class="ver">HoV 1.1 · em desenvolvimento</div><p>Assistente do Sr. Nathanael. APIs de agenda, tarefas, lembretes e mensagens.</p></div>
+      <div class="ai"><span class="tag">Auxiliar</span><h4>Miquéias</h4><div class="ver">JpG 1.0 · em desenvolvimento</div><p>Tarefista, calculista e trading. APIs de cotações, ordens, carteiras e cálculos.</p></div>
+      <div class="ai"><span class="tag">Desenvolvedor</span><h4>Asafe</h4><div class="ver">0.1 · recriação</div><p>Infraestrutura inteligente. APIs de servidores, logs, agentes e permissões.</p></div>
+      <div class="ai"><span class="tag">Desenvolvedor</span><h4>Gather</h4><div class="ver">0.1 · planejamento</div><p>Esta IA. Cria, registra, protege e monitora as APIs de todo o ecossistema.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="integracao">
+  <div class="container split">
+    <div>
+      <div class="section-head">
+        <div class="eyebrow">Para as IAs</div>
+        <h2>Manifesto de ferramentas</h2>
+        <p>
+          Cada API gerada vem com um manifesto <code>gather.tools.json</code>. Uma IA carrega o arquivo,
+          recebe a lista de ferramentas com <code>input_schema</code> e passa a chamar a API sem código extra.
+        </p>
+      </div>
+      <a class="btn ghost" href="docs.html#manifesto">Formato do manifesto →</a>
+    </div>
+    <div class="code-wrap">
+<pre class="code"><span class="c">// gather.tools.json — gerado para Miquéias</span>
+{
+  <span class="k">"gather"</span>: <span class="s">"0.1"</span>,
+  <span class="k">"api"</span>: <span class="s">"miqueias-api-de-cotacoes"</span>,
+  <span class="k">"consumidor"</span>: <span class="s">"miqueias"</span>,
+  <span class="k">"auth"</span>: { <span class="k">"type"</span>: <span class="s">"apiKey"</span>, <span class="k">"header"</span>: <span class="s">"X-Gather-Key"</span> },
+  <span class="k">"tools"</span>: [
+    {
+      <span class="k">"name"</span>: <span class="s">"miqueias_api_de_cotacoes_listar_cotacoes"</span>,
+      <span class="k">"description"</span>: <span class="s">"Listar cotações — GET /cotacoes"</span>,
+      <span class="k">"input_schema"</span>: {
+        <span class="k">"type"</span>: <span class="s">"object"</span>,
+        <span class="k">"properties"</span>: { <span class="k">"limite"</span>: { <span class="k">"type"</span>: <span class="s">"integer"</span> } }
+      }
+    }
+  ]
+}</pre>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="roadmap">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Roadmap</div>
+      <h2>Evolução da Gather</h2>
+    </div>
+    <div class="roadmap">
+      <div class="road"><span class="v">0.1</span><p><b>Fundação</b>Console de desenvolvedor, motor de geração local, catálogo, credenciais e monitor simulados.</p><span class="pill cy">Atual</span></div>
+      <div class="road"><span class="v">0.2</span><p><b>Backend real</b>Persistência central, emissão de chaves no servidor e deploy das APIs via Asafe.</p><span class="pill">Planejado</span></div>
+      <div class="road"><span class="v">0.3</span><p><b>Geração com LLM</b>Interpretação de pedidos por modelo de linguagem e geração de lógica de negócio.</p><span class="pill">Planejado</span></div>
+      <div class="road"><span class="v">1.0</span><p><b>Orquestração autônoma</b>IAs solicitam APIs entre si; a Gather seleciona, cria, publica e monitora sozinha.</p><span class="pill">Visão</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <img src="assets/img/gather-logo-white.png" alt="Gather">
+    <span>© <span id="ano"></span> Nathanael Industries · Gather 0.1 — Gerenciadora e orquestradora de APIs</span>
+  </div>
+</footer>
+
+<script>
+  document.getElementById("ano").textContent = new Date().getFullYear();
+  try {
+    const apis = JSON.parse(localStorage.getItem("gather.apis") || "[]");
+    document.getElementById("st-apis").textContent = apis.length;
+    document.getElementById("st-eps").textContent = apis.reduce((n, a) => n + (a.endpoints || []).length, 0);
+  } catch (_) {}
+</script>
+</body>
+</html>

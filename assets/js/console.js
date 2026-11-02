@@ -135,6 +135,15 @@
     const btn = $("#btn-gerar"); btn.disabled = true;
     const think = $("#think"); think.innerHTML = "";
     const { spec, steps } = G.interpret(text);
+    // Lição do laboratório: pedidos parecidos geravam o mesmo nome e o registro era bloqueado.
+    // Agora a Gather avisa que já existe uma API parecida e numera a nova.
+    const twin = apis.find((a) => a.slug === spec.slug);
+    if (twin) {
+      let n = 2; while (apis.some((a) => a.slug === G.slugify(`${spec.name} ${n}`))) n++;
+      const again = G.build(Object.assign({}, spec, { name: `${spec.name} ${n}`, slug: undefined, baseUrl: undefined, id: undefined }));
+      Object.assign(spec, { name: again.name, slug: again.slug, baseUrl: again.baseUrl });
+      steps.push(`Já existe "${twin.name}" — considere reutilizá-la (Roteador). Nova API numerada como ${n}.`);
+    }
     const lines = ["interpretando pedido…", ...steps, `Endpoints gerados: ${spec.endpoints.length}`, "Artefatos prontos: openapi.json, gather.tools.json, server.js, client.js, client.py"];
     for (let i = 0; i < lines.length; i++) {
       const cls = i === 0 ? "cy" : i === lines.length - 1 ? "ok" : "";

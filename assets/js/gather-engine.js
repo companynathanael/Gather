@@ -25,21 +25,21 @@
   // Cada recurso traz campos sugeridos (nome: tipo).
   const RESOURCES = [
     { re: /cota[cç](ão|ões|ao|oes)|pre[cç]os?|ticker/i, name: "cotacoes", label: "Cotação", fields: { ativo: "string", preco: "number", variacao: "number", volume: "number", timestamp: "datetime" } },
-    { re: /\bativos?\b|\bacao\b|\bacoes\b|cripto|moedas?/i, name: "ativos", label: "Ativo", fields: { simbolo: "string", nome: "string", tipo: "string", mercado: "string" } },
-    { re: /\bordens?\b|operacao|operacoes|\btrades?\b/i, name: "ordens", label: "Ordem", fields: { ativo: "string", lado: "string", quantidade: "number", preco: "number", status: "string" } },
-    { re: /carteiras?|portf[oó]lio|saldos?/i, name: "carteiras", label: "Carteira", fields: { titular: "string", saldo: "number", moeda: "string" } },
+    { re: /\bativos?\b|cripto|moedas?|\bac(ao|oes)\b(?=.*\b(bolsa|mercado|investiment|dividend))|(cotac|preco|trad|carteira|compra|venda|bolsa).*\bac(ao|oes)\b|\bac(ao|oes)\b.*(cotac|preco|trad|carteira|compra|venda)/i, name: "ativos", label: "Ativo", fields: { simbolo: "string", nome: "string", tipo: "string", mercado: "string" } },
+    { re: /\bordem\b|\bordens\b|operacao|operacoes|\btrades?\b/i, name: "ordens", label: "Ordem", fields: { ativo: "string", lado: "string", quantidade: "number", preco: "number", status: "string" } },
+    { re: /carteiras?|portf[oó]lio|saldos?|\bcontas? (bancaria|corrente|de investimento)|bancari/i, name: "carteiras", label: "Carteira", fields: { titular: "string", saldo: "number", moeda: "string" } },
     { re: /tarefas?|to-?dos?|afazeres/i, name: "tarefas", label: "Tarefa", fields: { titulo: "string", descricao: "string", prioridade: "string", concluida: "boolean", prazo: "datetime" } },
     { re: /agendas?|compromissos?|eventos?|reuni[aã]o|reuni[oõ]es/i, name: "eventos", label: "Evento", fields: { titulo: "string", inicio: "datetime", fim: "datetime", local: "string" } },
     { re: /lembretes?|alarmes?/i, name: "lembretes", label: "Lembrete", fields: { mensagem: "string", quando: "datetime", enviado: "boolean" } },
     { re: /notifica[cç](ão|ões|ao|oes)|alertas?/i, name: "notificacoes", label: "Notificação", fields: { canal: "string", destino: "string", mensagem: "string", nivel: "string" } },
-    { re: /mensagens?|chat|conversas?/i, name: "mensagens", label: "Mensagem", fields: { remetente: "string", destinatario: "string", conteudo: "string", enviada_em: "datetime" } },
+    { re: /mensage(m|ns)|\bchat\b|conversas?/i, name: "mensagens", label: "Mensagem", fields: { remetente: "string", destinatario: "string", conteudo: "string", enviada_em: "datetime" } },
     { re: /c[aá]lculos?|calcul|f[oó]rmulas?|matem/i, name: "calculos", label: "Cálculo", fields: { expressao: "string", resultado: "number" } },
     { re: /relat[oó]rios?|an[aá]lises?/i, name: "relatorios", label: "Relatório", fields: { titulo: "string", periodo: "string", conteudo: "string", gerado_em: "datetime" } },
     { re: /servidor(es)?|m[aá]quinas?|inst[aâ]ncias?/i, name: "servidores", label: "Servidor", fields: { hostname: "string", ip: "string", regiao: "string", status: "string", cpu: "number", memoria: "number" } },
     { re: /\blogs?\b|registros? de (a[cç][aã]o|atividade)|auditoria/i, name: "logs", label: "Log", fields: { agente: "string", acao: "string", nivel: "string", detalhes: "string", timestamp: "datetime" } },
     { re: /agentes?|\bias\b|intelig[eê]ncias?/i, name: "agentes", label: "Agente", fields: { nome: "string", versao: "string", categoria: "string", status: "string" } },
     { re: /permiss(ão|ões|ao|oes)|acessos?|pap[eé]is/i, name: "permissoes", label: "Permissão", fields: { agente: "string", recurso: "string", nivel: "string" } },
-    { re: /usu[aá]rios?|contas?|clientes?|contatos?/i, name: "usuarios", label: "Usuário", fields: { nome: "string", email: "string", papel: "string" } },
+    { re: /usu[aá]rios?|\bcontas? de (usuario|acesso|login)|clientes?|contatos?/i, name: "usuarios", label: "Usuário", fields: { nome: "string", email: "string", papel: "string" } },
     { re: /arquivos?|documentos?|uploads?/i, name: "arquivos", label: "Arquivo", fields: { nome: "string", tipo: "string", tamanho: "integer", url: "string" } },
     { re: /\bdados\b|armazenamento|\bregistros?\b|banco de dados/i, name: "registros", label: "Registro", fields: { chave: "string", valor: "string", criado_em: "datetime" } },
     { re: /clima|previs[aã]o do tempo|meteorol/i, name: "clima", label: "Clima", fields: { cidade: "string", temperatura: "number", condicao: "string" } },
@@ -62,9 +62,20 @@
   const camel = (s) => slugify(s).replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase());
   const pascal = (s) => { const c = camel(s); return c.charAt(0).toUpperCase() + c.slice(1); };
   const snake = (s) => slugify(s).replace(/-/g, "_");
-  const singular = (s) => s.replace(/oes$/, "ao").replace(/([rsz])es$/, "$1").replace(/s$/, "");
+  // Lição do laboratório: plurais/singulares do português (ordem→ordens, tradução→traduções, papel→papéis)
+  const singular = (s) => s.replace(/ões$/, "ão").replace(/oes$/, "ao").replace(/ns$/, "m").replace(/([rz])es$/, "$1").replace(/eis$/, "el").replace(/s$/, "");
+  const pluralize = (w) => /ão$/.test(w) ? w.replace(/ão$/, "ões") : /ao$/.test(w) ? w.replace(/ao$/, "oes") : /m$/.test(w) ? w.replace(/m$/, "ns") : /[rz]$/.test(w) ? w + "es" : /el$/.test(w) ? w.replace(/el$/, "éis") : /s$/.test(w) ? w : w + "s";
   const PLURAIS = { "Cotação": "cotações", "Notificação": "notificações", "Permissão": "permissões", "Usuário": "usuários", "Cálculo": "cálculos", "Relatório": "relatórios", "Notícia": "notícias", "Servidor": "servidores", "Clima": "dados de clima" };
-  const plural = (label) => PLURAIS[label] || label.toLowerCase() + "s";
+  const plural = (label) => PLURAIS[label] || pluralize(label.toLowerCase());
+  const resPlural = (r) => r.plural || plural(r.label);
+
+  // Palavras que não podem virar recurso genérico
+  const STOP = new Set(("api apis servico servicos integracao sistema modulo endpoint endpoints rota rotas para pra pro de da do das dos " +
+    "um uma uns umas o a os as e ou com sem por em no na nos nas que ao aos meu minha seu sua cada todo toda todos todas ias ia agente " +
+    "precisa precisam quer querem deve devem vai preciso gerenciar gerenciamento administrar controlar controle listar criar consultar cadastrar " +
+    "registrar atualizar remover excluir apagar obter ver buscar fazer novo nova simples completa crud dados tempo real webhook publica " +
+    "autenticacao jwt token oauth oauth2 bearer limite chefe sr senhor nathanael horacio miqueias asafe gather " +
+    "estoque cadastro lista historico gestao catalogo painel base banco central").split(" "));
 
   function typeToSchema(t) {
     switch (t) {
@@ -96,7 +107,7 @@
   /* ---------- Construção de endpoints ---------- */
   function endpointsFor(resource, actions) {
     const base = `/${resource.name}`;
-    const pl = plural(resource.label), sg = resource.label.toLowerCase();
+    const pl = resPlural(resource), sg = resource.label.toLowerCase();
     const all = {
       list:   { method: "GET",    path: base,            summary: `Listar ${pl}` },
       get:    { method: "GET",    path: `${base}/{id}`,  summary: `Consultar ${sg} por ID` },
@@ -119,18 +130,32 @@
     steps.push(`IA consumidora identificada: ${consumer.name}`);
 
     // 2) recursos
-    const resources = [];
+    // Lição: "para todas as IAs" indica o consumidor, não o recurso "agentes".
+    const scan = norm.replace(/\b(todas|todos) (as|os) (ias|agentes|inteligencias)\b/g, " ");
+    const found = [];
     for (const r of RESOURCES) {
-      if (r.re.test(norm)) {
-        if (!resources.some((x) => x.name === r.name)) resources.push(JSON.parse(JSON.stringify({ name: r.name, label: r.label, fields: r.fields })));
-      }
+      const m = scan.match(r.re);
+      if (m && !found.some((x) => x.r.name === r.name)) found.push({ r, at: m.index });
     }
+    // Lição: o recurso principal é o que aparece primeiro no pedido, não o primeiro do dicionário.
+    found.sort((a, b) => a.at - b.at);
+    const resources = found.map(({ r }) => ({ name: r.name, label: r.label, fields: JSON.parse(JSON.stringify(r.fields)) }));
     if (!resources.length) {
-      // fallback: palavra após "de"/"para gerenciar"
-      const m = norm.match(/(?:api|servico|integracao)\s+(?:de|para)\s+([a-z]+)/) || norm.match(/gerenciar\s+([a-z]+)/);
-      const word = m ? m[1] : "itens";
-      resources.push({ name: slugify(word), label: pascal(singular(word)), fields: { nome: "string", descricao: "string", criado_em: "datetime" } });
-      steps.push(`Nenhum recurso conhecido — criado recurso genérico "${word}"`);
+      // Lição: ignorar verbos, conectivos e palavras de "contêiner" (estoque, cadastro…) e pegar o substantivo de verdade.
+      const nfc = raw.normalize("NFC");
+      const words = [...scan.matchAll(/[a-z0-9]+/g)].filter((w) => w[0].length > 2 && !STOP.has(w[0]));
+      // Lição: em "<coleção> de <itens>" (biblioteca de livros, estoque de produtos) o recurso é o item, no plural.
+      let w = words[0];
+      if (w && !/s$/.test(w[0])) {
+        const nx = scan.slice(w.index + w[0].length).match(/^\s+(?:de|do|da|dos|das)\s+([a-z0-9]+)/);
+        const alt = nx && words.find((x) => x[0] === nx[1] && /s$/.test(x[0]));
+        if (alt) w = alt;
+      }
+      const word = w ? (strip(nfc.slice(w.index, w.index + w[0].length)).toLowerCase() === w[0] ? nfc.slice(w.index, w.index + w[0].length).toLowerCase() : w[0]) : "itens";
+      const pl = /s$/.test(word) ? word : pluralize(word);
+      const sg = singular(pl);
+      resources.push({ name: slugify(pl).replace(/-/g, "_"), label: sg.charAt(0).toUpperCase() + sg.slice(1), plural: pl, fields: { nome: "string", descricao: "string", criado_em: "datetime" } });
+      steps.push(`Nenhum recurso conhecido — criado recurso genérico "${pl}"`);
     } else {
       steps.push(`Recursos detectados: ${resources.map((r) => r.name).join(", ")}`);
     }
@@ -157,14 +182,18 @@
 
     // 6) nome
     const nameMatch = raw.match(/["“](.+?)["”]/);
-    const mainLabel = resources[0].label;
-    const name = nameMatch ? nameMatch[1] : `${consumer.id === "todas" ? "NI" : consumer.name} · API de ${plural(mainLabel)}`;
+    const name = nameMatch ? nameMatch[1] : `${consumer.id === "todas" ? "NI" : consumer.name} · API de ${resPlural(resources[0])}`;
 
     let endpoints = [];
     resources.forEach((r) => (endpoints = endpoints.concat(endpointsFor(r, actions))));
     if (resources.some((r) => r.name === "calculos")) {
       endpoints.push({ method: "POST", path: "/calculos/avaliar", summary: "Avaliar expressão matemática", resource: "calculos", action: "custom" });
     }
+    // Lição: verbos de operação viram rotas de ação sobre um item (ex.: POST /servidores/{id}/reiniciar).
+    const VERBOS = { reiniciar: "Reiniciar", pausar: "Pausar", retomar: "Retomar", aprovar: "Aprovar", sincronizar: "Sincronizar", arquivar: "Arquivar" };
+    Object.keys(VERBOS).filter((v) => norm.includes(v)).forEach((v) => {
+      endpoints.push({ method: "POST", path: `/${resources[0].name}/{id}/${v}`, summary: `${VERBOS[v]} ${resources[0].label.toLowerCase()}`, resource: resources[0].name, action: "custom" });
+    });
     if (extras.realtime) endpoints.push({ method: "GET", path: `/${resources[0].name}/stream`, summary: `Stream em tempo real de ${resources[0].name} (SSE)`, resource: resources[0].name, action: "stream" });
     if (extras.webhook) endpoints.push({ method: "POST", path: "/webhooks", summary: "Registrar webhook de eventos", resource: "webhooks", action: "custom" });
     endpoints.push({ method: "GET", path: "/health", summary: "Verificar saúde da API", resource: "health", action: "health" });
@@ -184,7 +213,7 @@
   /* ---------- Normaliza/completa uma spec ---------- */
   function build(input) {
     const slug = slugify(input.slug || input.name);
-    const resources = (input.resources || []).map((r) => ({ name: slugify(r.name).replace(/-/g, "_"), label: r.label || pascal(singular(r.name)), fields: r.fields || { nome: "string" } }));
+    const resources = (input.resources || []).map((r) => ({ name: slugify(r.name).replace(/-/g, "_"), label: r.label || pascal(singular(r.name)), plural: r.plural, fields: r.fields || { nome: "string" } }));
     const endpoints = (input.endpoints || []).filter((e) => e && e.path).map((e) => ({
       method: String(e.method || "GET").toUpperCase(),
       path: e.path.startsWith("/") ? e.path : "/" + e.path,
@@ -356,7 +385,10 @@
     L.push(`  next();`);
     L.push(`});`);
     L.push(``);
-    spec.endpoints.forEach((e) => {
+    // Lição: rotas fixas (/x/stream) precisam vir antes das rotas com parâmetro (/x/:id), senão o Express nunca as alcança.
+    const ordered = spec.endpoints.map((e, k) => ({ e, k, dyn: (e.path.match(/\{/g) || []).length }))
+      .sort((a, b) => a.dyn - b.dyn || a.k - b.k).map((x) => x.e);
+    ordered.forEach((e) => {
       const p = e.path.replace(/\{(\w+)\}/g, ":$1");
       const m = e.method.toLowerCase();
       const col = spec.resources.find((r) => r.name === e.resource) ? `db.${e.resource}` : null;
@@ -396,6 +428,23 @@
         L.push(`  res.set({ "Content-Type": "text/event-stream", "Cache-Control": "no-cache", Connection: "keep-alive" });`);
         L.push(`  const t = setInterval(() => res.write(\`data: \${JSON.stringify({ ts: Date.now() })}\\n\\n\`), 1000);`);
         L.push(`  req.on("close", () => clearInterval(t));`);
+        L.push(`});`);
+      } else if (e.path === "/calculos/avaliar") {
+        L.push(`app.${m}("${p}", (req, res) => {`);
+        L.push(`  const expr = String((req.body || {}).expressao || "");`);
+        L.push(`  if (!/^[\\d\\s+\\-*/().,%^]+$/.test(expr)) return res.status(400).json({ erro: "Expressão inválida", codigo: "GATHER_400" });`);
+        L.push(`  try {`);
+        L.push(`    const resultado = Function(\`"use strict"; return (\${expr.replace(/\\^/g, "**").replace(/,/g, ".")})\`)();`);
+        L.push(`    if (typeof resultado !== "number" || !isFinite(resultado)) throw new Error();`);
+        L.push(`    res.json({ expressao: expr, resultado });`);
+        L.push(`  } catch (_) { res.status(400).json({ erro: "Expressão inválida", codigo: "GATHER_400" }); }`);
+        L.push(`});`);
+      } else if (col && /\{id\}/.test(e.path)) {
+        L.push(`app.${m}("${p}", (req, res) => {`);
+        L.push(`  const item = ${col}.get(req.params.id);`);
+        L.push(`  if (!item) return res.status(404).json({ erro: "Não encontrado", codigo: "GATHER_404" });`);
+        L.push(`  // TODO: implementar "${e.summary}"`);
+        L.push(`  res.json({ ok: true, acao: "${e.path.split("/").pop()}", item });`);
         L.push(`});`);
       } else {
         L.push(`app.${m}("${p}", (req, res) => {`);

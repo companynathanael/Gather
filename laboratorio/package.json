@@ -1,0 +1,7 @@
+{
+  "name": "gather-laboratorio",
+  "private": true,
+  "description": "Laboratório de testes da Gather: gera APIs, roda os servidores gerados e remove tudo no final.",
+  "scripts": { "test": "node run.js" },
+  "dependencies": { "express": "4.21.2" }
+}

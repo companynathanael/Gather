@@ -1,0 +1,566 @@
+[
+ {
+  "t": "API de cotações em tempo real para o Miquéias listar ativos e consultar preços",
+  "ai": "miqueias",
+  "res": [
+   "cotacoes",
+   "ativos"
+  ],
+  "auth": "apiKey",
+  "stream": true
+ },
+ {
+  "t": "Horácio precisa gerenciar tarefas e lembretes com notificação por webhook",
+  "ai": "horacio",
+  "res": [
+   "tarefas",
+   "lembretes",
+   "notificacoes"
+  ],
+  "webhook": true,
+  "crud": true
+ },
+ {
+  "t": "Asafe: monitorar servidores e logs dos agentes, autenticação JWT",
+  "ai": "asafe",
+  "res": [
+   "servidores",
+   "logs",
+   "agentes"
+  ],
+  "auth": "bearer"
+ },
+ {
+  "t": "API de cálculos para o Miquéias avaliar fórmulas",
+  "ai": "miqueias",
+  "res": [
+   "calculos"
+  ],
+  "custom": "/calculos/avaliar"
+ },
+ {
+  "t": "Gerenciar permissões de acesso dos agentes para todas as IAs",
+  "ai": "todas",
+  "res": [
+   "permissoes",
+   "agentes"
+  ],
+  "crud": true,
+  "main": "permissoes"
+ },
+ {
+  "t": "Horácio: agenda de compromissos e mensagens do Sr. Nathanael",
+  "ai": "horacio",
+  "res": [
+   "eventos",
+   "mensagens"
+  ]
+ },
+ {
+  "t": "Miquéias precisa abrir ordens de compra e venda e consultar a carteira",
+  "ai": "miqueias",
+  "res": [
+   "ordens",
+   "carteiras"
+  ],
+  "has": [
+   "create",
+   "get"
+  ]
+ },
+ {
+  "t": "api de clima para o horacio consultar a previsão do tempo",
+  "ai": "horacio",
+  "res": [
+   "clima"
+  ],
+  "notRes": [
+   "eventos"
+  ]
+ },
+ {
+  "t": "\"Feed Diário\" — notícias para o Horácio listar",
+  "ai": "horacio",
+  "res": [
+   "noticias"
+  ],
+  "name": "Feed Diário"
+ },
+ {
+  "t": "API pública de notícias sem autenticação",
+  "ai": "todas",
+  "res": [
+   "noticias"
+  ],
+  "auth": "none"
+ },
+ {
+  "t": "Asafe precisa de OAuth para gerenciar usuários",
+  "ai": "asafe",
+  "res": [
+   "usuarios"
+  ],
+  "auth": "oauth2",
+  "crud": true
+ },
+ {
+  "t": "upload de arquivos e documentos para todas as IAs",
+  "ai": "todas",
+  "res": [
+   "arquivos"
+  ],
+  "notRes": [
+   "agentes"
+  ],
+  "main": "arquivos"
+ },
+ {
+  "t": "Miquéias: relatórios de análise de trading com cálculos de risco",
+  "ai": "miqueias",
+  "res": [
+   "relatorios",
+   "calculos"
+  ],
+  "main": "relatorios"
+ },
+ {
+  "t": "cobranças e pagamentos do Sr. Nathanael, o Horácio deve registrar e cancelar",
+  "ai": "horacio",
+  "res": [
+   "pagamentos"
+  ],
+  "has": [
+   "create",
+   "remove"
+  ]
+ },
+ {
+  "t": "Asafe quer armazenamento de dados chave-valor",
+  "ai": "asafe",
+  "res": [
+   "registros"
+  ]
+ },
+ {
+  "t": "API de receitas culinárias",
+  "ai": "todas",
+  "res": [
+   "receitas"
+  ],
+  "generic": true
+ },
+ {
+  "t": "API para gerenciar veículos da frota",
+  "ai": "todas",
+  "res": [
+   "veiculos"
+  ],
+  "generic": true,
+  "crud": true,
+  "main": "veiculos"
+ },
+ {
+  "t": "MIQUEIAS COTACOES TEMPO REAL",
+  "ai": "miqueias",
+  "res": [
+   "cotacoes"
+  ],
+  "stream": true
+ },
+ {
+  "t": "miqueias cotacoes de acoes da bolsa",
+  "ai": "miqueias",
+  "res": [
+   "cotacoes",
+   "ativos"
+  ]
+ },
+ {
+  "t": "Horácio lembrar o chefe de reuniões",
+  "ai": "horacio",
+  "res": [
+   "eventos"
+  ]
+ },
+ {
+  "t": "alertas de servidores fora do ar para o Asafe com webhook",
+  "ai": "asafe",
+  "res": [
+   "notificacoes",
+   "servidores"
+  ],
+  "webhook": true
+ },
+ {
+  "t": "Asafe: auditoria das ações dos agentes",
+  "ai": "asafe",
+  "res": [
+   "logs",
+   "agentes"
+  ],
+  "notRes": [
+   "ativos"
+  ],
+  "main": "logs"
+ },
+ {
+  "t": "conversas entre o Horácio e o Miquéias",
+  "ai": "horacio",
+  "res": [
+   "mensagens"
+  ],
+  "main": "mensagens"
+ },
+ {
+  "t": "chat do Horácio com token bearer",
+  "ai": "horacio",
+  "res": [
+   "mensagens"
+  ],
+  "auth": "bearer"
+ },
+ {
+  "t": "Miquéias: saldo da carteira cripto e moedas",
+  "ai": "miqueias",
+  "res": [
+   "carteiras",
+   "ativos"
+  ],
+  "main": "carteiras"
+ },
+ {
+  "t": "Gather precisa de um registro das próprias APIs com versões",
+  "ai": "gather",
+  "res": [
+   "registros"
+  ]
+ },
+ {
+  "t": "clientes e contatos do Sr. Nathanael para o Horácio",
+  "ai": "horacio",
+  "res": [
+   "usuarios"
+  ]
+ },
+ {
+  "t": "Horácio precisa listar e concluir tarefas",
+  "ai": "horacio",
+  "res": [
+   "tarefas"
+  ],
+  "has": [
+   "list",
+   "update"
+  ]
+ },
+ {
+  "t": "Horácio precisa apagar lembretes antigos",
+  "ai": "horacio",
+  "res": [
+   "lembretes"
+  ],
+  "has": [
+   "remove"
+  ]
+ },
+ {
+  "t": "Miquéias precisa executar trades com limite de requisições",
+  "ai": "miqueias",
+  "res": [
+   "ordens"
+  ],
+  "rate": 60
+ },
+ {
+  "t": "instâncias e máquinas do Asafe em tempo real",
+  "ai": "asafe",
+  "res": [
+   "servidores"
+  ],
+  "stream": true
+ },
+ {
+  "t": "Asafe: papéis e acessos das IAs",
+  "ai": "asafe",
+  "res": [
+   "permissoes",
+   "agentes"
+  ]
+ },
+ {
+  "t": "previsão do tempo e notícias para todas as IAs",
+  "ai": "todas",
+  "res": [
+   "clima",
+   "noticias"
+  ],
+  "notRes": [
+   "agentes"
+  ],
+  "main": "clima"
+ },
+ {
+  "t": "faturas pendentes do mês para o Miquéias calcular",
+  "ai": "miqueias",
+  "res": [
+   "pagamentos",
+   "calculos"
+  ]
+ },
+ {
+  "t": "Horácio: lista de afazeres com prioridade",
+  "ai": "horacio",
+  "res": [
+   "tarefas"
+  ]
+ },
+ {
+  "t": "API de documentos com OAuth2 para o Asafe",
+  "ai": "asafe",
+  "res": [
+   "arquivos"
+  ],
+  "auth": "oauth2"
+ },
+ {
+  "t": "ticker de preços do Miquéias via websocket",
+  "ai": "miqueias",
+  "res": [
+   "cotacoes"
+  ],
+  "stream": true
+ },
+ {
+  "t": "API de estoque de produtos",
+  "ai": "todas",
+  "res": [
+   "produtos"
+  ],
+  "generic": true,
+  "main": "produtos"
+ },
+ {
+  "t": "serviço de traduções para o Horácio",
+  "ai": "horacio",
+  "res": [
+   "traducoes"
+  ],
+  "generic": true
+ },
+ {
+  "t": "Horácio e Miquéias compartilham um calendário de eventos",
+  "ai": "horacio",
+  "res": [
+   "eventos"
+  ]
+ },
+ {
+  "t": "integração de notificações por e-mail do Horácio com callback",
+  "ai": "horacio",
+  "res": [
+   "notificacoes"
+  ],
+  "webhook": true
+ },
+ {
+  "t": "Asafe: banco de dados de registros de atividade",
+  "ai": "asafe",
+  "res": [
+   "logs",
+   "registros"
+  ]
+ },
+ {
+  "t": "Miquéias: obter detalhes de uma ordem por id",
+  "ai": "miqueias",
+  "res": [
+   "ordens"
+  ],
+  "has": [
+   "get"
+  ],
+  "main": "ordens"
+ },
+ {
+  "t": "criar alarmes para o Horácio",
+  "ai": "horacio",
+  "res": [
+   "lembretes"
+  ],
+  "has": [
+   "create"
+  ]
+ },
+ {
+  "t": "Gather: catálogo de inteligências e versões",
+  "ai": "gather",
+  "res": [
+   "agentes"
+  ]
+ },
+ {
+  "t": "API \"Painel Trader\" de ordens e carteiras em tempo real para o Miquéias, com webhook",
+  "ai": "miqueias",
+  "res": [
+   "ordens",
+   "carteiras"
+  ],
+  "stream": true,
+  "webhook": true,
+  "name": "Painel Trader"
+ },
+ {
+  "t": "contas bancárias do Miquéias",
+  "ai": "miqueias",
+  "res": [
+   "carteiras"
+  ]
+ },
+ {
+  "t": "Asafe precisa reiniciar servidores",
+  "ai": "asafe",
+  "res": [
+   "servidores"
+  ],
+  "custom": "/servidores/{id}/reiniciar"
+ },
+ {
+  "t": "relatório semanal do Horácio para o chefe",
+  "ai": "horacio",
+  "res": [
+   "relatorios"
+  ]
+ },
+ {
+  "t": "api",
+  "ai": "todas",
+  "generic": true
+ },
+ {
+  "t": "Miquéias quer acompanhar o preço de ações da Petrobras",
+  "ai": "miqueias",
+  "res": [
+   "cotacoes",
+   "ativos"
+  ],
+  "main": "cotacoes"
+ },
+ {
+  "t": "API para controlar a biblioteca de livros do Sr. Nathanael",
+  "ai": "todas",
+  "res": [
+   "livros"
+  ],
+  "main": "livros"
+ },
+ {
+  "t": "Horácio precisa enviar mensagem para o Asafe",
+  "ai": "horacio",
+  "res": [
+   "mensagens"
+  ],
+  "has": [
+   "create"
+  ]
+ },
+ {
+  "t": "Asafe deve pausar e retomar agentes",
+  "ai": "asafe",
+  "res": [
+   "agentes"
+  ],
+  "custom": "/agentes/{id}/pausar"
+ },
+ {
+  "t": "cadastro de fornecedores com OAuth",
+  "ai": "todas",
+  "res": [
+   "fornecedores"
+  ],
+  "auth": "oauth2",
+  "main": "fornecedores"
+ },
+ {
+  "t": "Miquéias: histórico de operações na bolsa",
+  "ai": "miqueias",
+  "res": [
+   "ordens"
+  ],
+  "main": "ordens"
+ },
+ {
+  "t": "Horácio precisa de uma API de viagens",
+  "ai": "horacio",
+  "res": [
+   "viagens"
+  ],
+  "main": "viagens"
+ },
+ {
+  "t": "lista de compras do Horácio",
+  "ai": "horacio",
+  "res": [
+   "compras"
+  ],
+  "main": "compras"
+ },
+ {
+  "t": "Asafe: alertas de uso de memória dos servidores em tempo real",
+  "ai": "asafe",
+  "res": [
+   "notificacoes",
+   "servidores"
+  ],
+  "stream": true
+ },
+ {
+  "t": "API de pedidos e entregas para todas as IAs",
+  "ai": "todas",
+  "res": [
+   "pedidos"
+  ],
+  "notRes": [
+   "agentes"
+  ],
+  "main": "pedidos"
+ },
+ {
+  "t": "Miquéias calcular juros compostos",
+  "ai": "miqueias",
+  "res": [
+   "calculos"
+  ],
+  "custom": "/calculos/avaliar"
+ },
+ {
+  "t": "Horácio precisa de um diário pessoal do chefe",
+  "ai": "horacio",
+  "main": "diarios"
+ },
+ {
+  "t": "Gather sincronizar registros das APIs",
+  "ai": "gather",
+  "res": [
+   "registros"
+  ],
+  "custom": "/registros/{id}/sincronizar"
+ },
+ {
+  "t": "Asafe: aprovar pedidos de permissão dos agentes",
+  "ai": "asafe",
+  "res": [
+   "permissoes"
+  ],
+  "custom": "/permissoes/{id}/aprovar"
+ },
+ {
+  "t": "notícias de cripto para o Miquéias via stream",
+  "ai": "miqueias",
+  "res": [
+   "noticias",
+   "ativos"
+  ],
+  "stream": true,
+  "main": "noticias"
+ }
+]

@@ -220,7 +220,9 @@ th { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-tr
 tr:last-child td { border-bottom: none; }
 tbody tr { transition: background .15s; }
 tbody tr:hover { background: rgba(0, 229, 255, .03); }
-td .sub { color: var(--dim); font-size: 11.5px; font-family: var(--mono); }
+td .sub { color: var(--dim); font-size: 11.5px; font-family: var(--mono); word-break: break-all; }
+#cat-body td:first-child { white-space: normal; min-width: 200px; }
+#cat-body td, #view-catalogo th { padding-left: 10px; padding-right: 10px; }
 .acts { display: flex; gap: 6px; }
 
 .empty { display: grid; justify-items: center; gap: 6px; text-align: center; padding: 44px 20px; color: var(--dim); border: 1px dashed var(--line-2); border-radius: 14px; white-space: normal; }
@@ -299,7 +301,7 @@ hr.sep { border: none; height: 1px; background: var(--line); margin: 16px 0; }
 
 /* ---------- Responsivo ---------- */
 @media (max-width: 1480px) { .top-stats { display: none; } }
-@media (max-width: 1280px) { .brand .sub { display: none; } }
+@media (max-width: 1560px) { .brand .sub { display: none; } }
 @media (max-width: 1100px) {
   .topbar { flex-wrap: wrap; }
   .seg { order: 3; width: 100%; margin: 0; }

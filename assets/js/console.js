@@ -29,7 +29,7 @@
   }
 
   function toast(msg) {
-    const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+    const t = $("#toast"); $("#toast-msg").textContent = msg; t.classList.add("show");
     clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2600);
   }
 
@@ -56,51 +56,60 @@
   }
 
   /* ---------- Navegação ---------- */
-  const VIEWS = ["visao", "criar", "catalogo", "roteador", "credenciais", "playground", "monitor", "config"];
+  const VIEWS = ["criar", "catalogo", "roteador", "credenciais", "playground", "monitor"];
   function go(view) {
-    if (!VIEWS.includes(view)) view = "visao";
+    if (!VIEWS.includes(view)) view = "criar";
     $$(".view").forEach((v) => v.classList.toggle("active", v.id === "view-" + view));
-    $$(".sidebar button").forEach((b) => b.classList.toggle("active", b.dataset.view === view));
-    if (view === "visao") renderOverview();
+    $$("#seg button").forEach((b) => b.classList.toggle("active", b.dataset.view === view));
+    renderStats();
     if (view === "catalogo") renderCatalog();
     if (view === "credenciais") renderKeys();
     if (view === "playground") renderPlayground();
     if (view === "monitor") renderMonitor();
     window.scrollTo(0, 0);
   }
-  $$(".sidebar button").forEach((b) => b.addEventListener("click", () => { location.hash = b.dataset.view; }));
+  $$("#seg button").forEach((b) => b.addEventListener("click", () => { location.hash = b.dataset.view; }));
   window.addEventListener("hashchange", () => go(location.hash.slice(1)));
 
   function updateCounts() {
-    $("#c-apis").textContent = apis.length;
-    $("#c-keys").textContent = keys.filter((k) => !k.revoked).length;
+    const na = apis.length, nk = keys.filter((k) => !k.revoked).length;
+    $("#c-apis").textContent = na; $("#c-apis").dataset.n = na;
+    $("#c-keys").textContent = nk; $("#c-keys").dataset.n = nk;
+    renderStats();
   }
 
   function fillAiSelect(sel, includeAll = true) {
     sel.innerHTML = G.AIS.filter((a) => includeAll || a.id !== "todas").map((a) => `<option value="${a.id}">${esc(a.name)} · ${esc(a.version)}</option>`).join("");
   }
 
-  /* ================= VISÃO GERAL ================= */
-  function renderOverview() {
+  /* ================= ESTADO GERAL ================= */
+  function renderStats() {
     $("#k-apis").textContent = apis.length;
     $("#k-pub").textContent = apis.filter((a) => a.status === "published").length;
     $("#k-eps").textContent = apis.reduce((n, a) => n + a.endpoints.length, 0);
     $("#k-keys").textContent = keys.filter((k) => !k.revoked).length;
-    const max = Math.max(1, ...G.AIS.map((ai) => apis.filter((a) => a.consumer === ai.id).length));
+    $("#ai-count").textContent = `${apis.length} API${apis.length === 1 ? "" : "s"}`;
     $("#by-ai").innerHTML = G.AIS.map((ai) => {
-      const n = apis.filter((a) => a.consumer === ai.id).length;
-      return `<div style="margin-bottom:12px">
-        <div class="flex" style="justify-content:space-between"><span>${esc(ai.name)} <span class="hint">${esc(ai.role)}</span></span><span class="mono" style="color:var(--cyan)">${n}</span></div>
-        <div style="height:6px;background:var(--line);border-radius:4px;margin-top:6px;overflow:hidden"><div style="height:100%;width:${(n / max) * 100}%;background:var(--cyan);box-shadow:var(--cyan-glow)"></div></div>
-      </div>`;
+      const mine = apis.filter((a) => a.consumer === ai.id);
+      const on = mine.filter((a) => a.status === "published").length;
+      return `<div class="ai-item"><span class="av ${mine.length ? "hi" : ""}">${esc(ai.id === "todas" ? "*" : ai.name[0])}</span>
+        <div><div class="nm">${esc(ai.name)}</div><div class="rl">${esc(ai.role)}</div></div>
+        <span class="ct">${on ? '<span class="dot"></span>' : ""}${mine.length} API${mine.length === 1 ? "" : "s"}</span></div>`;
     }).join("");
     renderActivity();
   }
   function renderActivity() {
     const el = $("#activity"); if (!el) return;
     el.innerHTML = activity.length
-      ? activity.map((a) => `<div><span class="t">${new Date(a.t).toLocaleString("pt-BR")}</span> <span class="${a.cls}">${esc(a.msg)}</span></div>`).join("")
-      : `<div class="t">Nenhuma atividade ainda. Crie sua primeira API.</div>`;
+      ? activity.slice(0, 40).map((a) => `<div class="${a.cls}"><span>${esc(a.msg)}<small>${ago(a.t)}</small></span></div>`).join("")
+      : `<div><span class="muted">Nenhuma atividade ainda.</span></div>`;
+  }
+  function ago(t) {
+    const s = Math.round((Date.now() - new Date(t)) / 1000);
+    if (s < 60) return "agora";
+    if (s < 3600) return `há ${Math.floor(s / 60)} min`;
+    if (s < 86400) return `há ${Math.floor(s / 3600)} h`;
+    return new Date(t).toLocaleDateString("pt-BR");
   }
 
   /* ================= CRIAR ================= */
@@ -124,9 +133,9 @@
     const text = $("#prompt").value.trim();
     if (!text) { toast("Descreva a API que a IA precisa"); return; }
     const btn = $("#btn-gerar"); btn.disabled = true;
-    const think = $("#think"); think.style.display = "block"; think.innerHTML = "";
+    const think = $("#think"); think.innerHTML = "";
     const { spec, steps } = G.interpret(text);
-    const lines = ["Gather 0.1 › interpretando pedido…", ...steps, `Endpoints gerados: ${spec.endpoints.length}`, "Artefatos prontos: openapi.json, gather.tools.json, server.js, client.js, client.py"];
+    const lines = ["interpretando pedido…", ...steps, `Endpoints gerados: ${spec.endpoints.length}`, "Artefatos prontos: openapi.json, gather.tools.json, server.js, client.js, client.py"];
     for (let i = 0; i < lines.length; i++) {
       const cls = i === 0 ? "cy" : i === lines.length - 1 ? "ok" : "";
       think.insertAdjacentHTML("beforeend", `<div><span class="t">›</span> <span class="${cls}">${esc(lines[i])}</span></div>`);
@@ -248,7 +257,7 @@
   });
   $("#btn-dl").addEventListener("click", () => { const a = artifact(readDraft(), outTab); download(a.name, a.code, a.type); });
   function resetForm() {
-    $("#prompt").value = ""; $("#think").style.display = "none";
+    $("#prompt").value = ""; $("#think").innerHTML = '<div class="t">aguardando pedido…</div>';
     draft = null;
     loadDraft(G.build({ name: "", endpoints: [{ method: "GET", path: "/health", summary: "Verificar saúde da API", action: "health", resource: "health" }] }));
     $("#f-name").value = "";
@@ -267,8 +276,8 @@
     if (i >= 0) apis[i] = spec; else apis.unshift(spec);
     saveApis(); updateCounts();
     log(`API ${i >= 0 ? "atualizada" : "registrada"}: ${spec.name} (${spec.endpoints.length} endpoints) → ${aiName(spec.consumer)}`, "ok");
-    if (publish) log(`API publicada: ${spec.baseUrl}`, "cy");
-    toast(publish ? "API registrada e publicada" : "API registrada no catálogo");
+    if (publish) log(`API ativada: ${spec.baseUrl}`, "cy");
+    toast(publish ? "API registrada e ativada" : "Rascunho salvo no catálogo");
     resetForm(); location.hash = "catalogo";
   }
   $("#btn-register").addEventListener("click", () => register(false));
@@ -286,15 +295,15 @@
         <td class="mono">${esc(a.version)}</td>
         <td class="mono">${a.endpoints.length}</td>
         <td>${AUTH_LABEL[a.auth] || a.auth}</td>
-        <td>${a.status === "published" ? `<span class="pill ok">publicada</span>` : `<span class="pill warn">rascunho</span>`}</td>
-        <td class="flex" style="flex-wrap:nowrap">
+        <td>${a.status === "published" ? `<span class="pill ok">ativa</span>` : `<span class="pill">rascunho</span>`}</td>
+        <td class="acts">
           <button class="btn sm ghost" data-act="ver">Ver</button>
           <button class="btn sm ghost" data-act="editar">Editar</button>
-          <button class="btn sm ghost" data-act="pub">${a.status === "published" ? "Despublicar" : "Publicar"}</button>
+          <button class="btn sm ghost" data-act="pub">${a.status === "published" ? "Desativar" : "Ativar"}</button>
           <button class="btn sm ghost" data-act="testar">Testar</button>
           <button class="btn sm danger" data-act="del">✕</button>
         </td>
-      </tr>`).join("") : `<tr><td colspan="7" class="empty">${apis.length ? "Nenhuma API encontrada." : 'Catálogo vazio. <a href="#criar">Crie a primeira API</a> ou carregue exemplos em Configurações.'}</td></tr>`;
+      </tr>`).join("") : `<tr><td colspan="7" class="empty-cell">${empty(apis.length ? "Nenhuma API encontrada." : "Nenhuma API criada ainda.", apis.length ? "Ajuste a busca ou o filtro." : 'Crie a primeira em <a href="#criar">Criar API</a> ou carregue os exemplos ao lado.')}</td></tr>`;
   }
   $("#cat-search").addEventListener("input", renderCatalog);
   $("#cat-filter").addEventListener("change", renderCatalog);
@@ -306,7 +315,7 @@
     if (act === "editar") { location.hash = "criar"; setTimeout(() => loadDraft(api), 0); }
     if (act === "pub") {
       api.status = api.status === "published" ? "draft" : "published"; saveApis();
-      log(`${api.status === "published" ? "Publicada" : "Despublicada"}: ${api.name}`, api.status === "published" ? "cy" : "warn"); renderCatalog();
+      log(`${api.status === "published" ? "Ativada" : "Desativada"}: ${api.name}`, api.status === "published" ? "cy" : "warn"); renderCatalog(); renderStats();
     }
     if (act === "testar") { location.hash = "playground"; setTimeout(() => { $("#p-api").value = api.id; fillEndpoints(); }, 0); }
     if (act === "del" && confirm(`Excluir a API "${api.name}"? As credenciais vinculadas serão revogadas.`)) {
@@ -359,22 +368,22 @@
       if (hits.length) { score += 8 * hits.length; reasons.push(`termos: ${hits.slice(0, 5).join(", ")}`); }
       if (a.consumer === ai || a.consumer === "todas") { score += 15; reasons.push("acesso permitido à IA"); }
       else if (score) { score -= 10; reasons.push(`pertence a ${aiName(a.consumer)} — exige credencial cruzada`); }
-      if (a.status === "published") { score += 10; reasons.push("publicada"); }
+      if (a.status === "published") { score += 10; reasons.push("ativa"); }
       return { a, score, reasons };
     }).filter((x) => x.score > 20).sort((x, y) => y.score - x.score);
 
     const out = $("#route-out");
     log(`Roteador: ${aiName(ai)} pediu "${need.slice(0, 60)}" → ${scored.length ? scored[0].a.name : "nenhuma API compatível"}`, scored.length ? "cy" : "warn");
     if (!scored.length) {
-      out.innerHTML = `<div class="panel"><h3>Nenhuma API compatível encontrada</h3><p class="muted">A Gather pode criar uma nova API para ${esc(aiName(ai))} com os recursos: <b>${esc([...wantedRes].join(", "))}</b>.</p><button class="btn" id="r-create">Criar esta API</button></div>`;
+      out.innerHTML = `<div class="glow-card"><b>Nenhuma API compatível encontrada</b><p class="muted">A Gather pode criar uma nova API para ${esc(aiName(ai))} com os recursos: <b>${esc([...wantedRes].join(", "))}</b>.</p><button class="btn" id="r-create">Criar esta API</button></div>`;
       $("#r-create").onclick = () => { location.hash = "criar"; setTimeout(() => { $("#prompt").value = `${need} para ${aiName(ai)}`; generate(); }, 0); };
       return;
     }
     out.innerHTML = scored.slice(0, 5).map((x, i) => {
       const op = x.a.endpoints.find((e) => wantedRes.has(e.resource) && e.action === "list") || x.a.endpoints[0];
-      return `<div class="panel" style="${i === 0 ? "border-color:var(--cyan);box-shadow:var(--cyan-glow)" : ""}">
-        <h3>${i === 0 ? '<span class="pill cy">recomendada</span>' : ""} ${esc(x.a.name)} <span class="spacer"></span><span class="mono" style="color:var(--cyan)">score ${x.score}</span></h3>
-        <div class="hint">${esc(x.reasons.join(" · "))}</div>
+      return `<div class="${i === 0 ? "glow-card" : "table-wrap"}" style="${i === 0 ? "" : "padding:16px"}">
+        <div class="flex">${i === 0 ? '<span class="pill solid">recomendada</span>' : ""}<b>${esc(x.a.name)}</b><span class="spacer"></span><span class="mono" style="color:var(--cyan)">score ${x.score}</span></div>
+        <div class="hint" style="margin-top:6px">${esc(x.reasons.join(" · "))}</div>
         <div class="mt mono" style="font-size:13px">Chamada sugerida: <span class="method m-${op.method}">${op.method}</span> ${esc(x.a.baseUrl + op.path)}</div>
       </div>`;
     }).join("");
@@ -402,7 +411,7 @@
       const expired = k.expires && new Date(k.expires) < new Date();
       const st = k.revoked ? `<span class="pill err">revogada</span>` : expired ? `<span class="pill warn">expirada</span>` : `<span class="pill ok">ativa</span>`;
       return `<tr data-id="${k.id}"><td class="mono">${esc(k.prefix)}…${esc(k.suffix)}</td><td>${esc(aiName(k.ai))}</td><td>${api ? esc(api.name) : k.api === "*" ? "Todas" : '<span class="hint">removida</span>'}</td><td>${esc(k.scope)}</td><td class="mono">${k.expires ? new Date(k.expires).toLocaleDateString("pt-BR") : "—"}</td><td class="mono">${k.uses || 0}</td><td>${st}</td><td>${k.revoked ? "" : '<button class="btn sm danger" data-act="revoke">Revogar</button>'}</td></tr>`;
-    }).join("") : `<tr><td colspan="8" class="empty">Nenhuma credencial emitida.</td></tr>`;
+    }).join("") : `<tr><td colspan="8" class="empty-cell">${empty("Nenhuma chave emitida.", "Emita uma chave ao lado para que uma IA possa acessar as APIs.")}</td></tr>`;
   }
   function fillApiSelect(sel, withAll) {
     const cur = sel.value;
@@ -418,7 +427,7 @@
       created: new Date().toISOString(), expires: days ? new Date(Date.now() + days * 864e5).toISOString() : null, revoked: false,
     };
     keys.unshift(rec); saveKeys(); updateCounts();
-    $("#new-key").innerHTML = `<div class="panel" style="border-color:var(--cyan);margin:0"><div class="hint">Copie agora — esta chave não será exibida novamente.</div><div class="flex mt"><code class="mono" style="color:var(--cyan);word-break:break-all;flex:1">${esc(key)}</code><button class="btn sm" id="copy-key">Copiar</button><button class="btn sm ghost" id="use-key">Usar no Playground</button></div></div>`;
+    $("#new-key").innerHTML = `<div class="glow-card"><div class="hint">Copie agora — esta chave não será exibida novamente.</div><div class="flex mt"><code class="mono" style="color:var(--cyan);word-break:break-all;flex:1">${esc(key)}</code><button class="btn sm" id="copy-key">Copiar</button><button class="btn sm ghost" id="use-key">Usar no Playground</button></div></div>`;
     $("#copy-key").onclick = () => copy(key);
     $("#use-key").onclick = () => { location.hash = "playground"; setTimeout(() => { $("#p-key").value = key; if (rec.api !== "*") { $("#p-api").value = rec.api; fillEndpoints(); } }, 0); };
     log(`Credencial emitida para ${aiName(rec.ai)} (${rec.scope}) — ${rec.prefix}…${rec.suffix}`, "ok");
@@ -539,6 +548,11 @@
   }
   function renderMonitorTable() {
     const pub = apis.filter((a) => a.status === "published");
+    const all = pub.flatMap((a) => monState(a).lat.filter((x) => x > 0)).sort((x, y) => x - y);
+    $("#m-active").textContent = pub.length;
+    $("#m-down").textContent = pub.filter((a) => monState(a).down).length;
+    $("#m-p50").textContent = (all.length ? all[Math.floor(all.length / 2)] : 0) + " ms";
+    $("#m-checks").textContent = pub.reduce((n, a) => n + monState(a).checks, 0);
     $("#mon-body").innerHTML = pub.length ? pub.map((a) => {
       const s = monState(a);
       const ok = s.lat.filter((x) => x > 0).sort((x, y) => x - y);
@@ -547,7 +561,7 @@
       return `<tr><td><b>${esc(a.name)}</b><div class="sub">${esc(a.baseUrl)}/health</div></td>
         <td>${s.down ? '<span class="pill err">fora do ar</span>' : p50 > 200 ? '<span class="pill warn">degradada</span>' : '<span class="pill ok">operacional</span>'}</td>
         <td class="mono">${up}%</td><td class="mono">${p50} ms</td><td class="mono">${s.errors}</td><td>${spark(s.lat.filter((x) => x > 0))}</td></tr>`;
-    }).join("") : `<tr><td colspan="6" class="empty">Nenhuma API publicada. Publique uma API no catálogo para monitorá-la.</td></tr>`;
+    }).join("") : `<tr><td colspan="6" class="empty-cell">${empty("Nenhuma API ativa.", "Ative uma API no catálogo para monitorá-la.")}</td></tr>`;
   }
   function renderMonitor() { renderMonitorTable(); if (!$("#mon-log").children.length) monLog("Monitor iniciado — verificando /health a cada 3s", "cy"); }
   function startMon() { clearInterval(monTimer); monTimer = setInterval(tick, 3000); tick(); }
@@ -568,7 +582,7 @@
       const known = new Set(apis.map((a) => a.id));
       data.apis.map((a) => G.build(a)).forEach((a) => { if (!known.has(a.id)) apis.push(a); });
       if (Array.isArray(data.keys)) { const kk = new Set(keys.map((k) => k.id)); data.keys.forEach((k) => { if (!kk.has(k.id) && k.hash) keys.push(k); }); }
-      saveApis(); saveKeys(); updateCounts(); log(`Registro importado: ${data.apis.length} API(s)`, "ok"); toast("Importação concluída");
+      saveApis(); saveKeys(); updateCounts(); go(location.hash.slice(1)); log(`Registro importado: ${data.apis.length} API(s)`, "ok"); toast("Importação concluída");
     } catch (err) { toast("Falha ao importar: " + err.message); }
     e.target.value = "";
   });
@@ -585,15 +599,20 @@
       if (apis.some((a) => a.slug === spec.slug)) return;
       spec.status = pub ? "published" : "draft"; apis.push(spec); n++;
     });
-    saveApis(); updateCounts(); log(`${n} API(s) de exemplo carregadas`, "cy"); toast(n ? `${n} API(s) de exemplo carregadas` : "Exemplos já carregados");
+    saveApis(); updateCounts(); renderCatalog(); log(`${n} API(s) de exemplo carregadas`, "cy"); toast(n ? `${n} API(s) de exemplo carregadas` : "Exemplos já carregados");
   });
   $("#btn-wipe").addEventListener("click", () => {
     if (!confirm("Apagar todas as APIs, credenciais e atividade deste navegador?")) return;
     apis = []; keys = []; activity = []; saveApis(); saveKeys(); store.set("activity", []);
-    Object.keys(mon).forEach((k) => delete mon[k]); updateCounts(); toast("Registro apagado");
+    Object.keys(mon).forEach((k) => delete mon[k]); updateCounts(); renderCatalog(); toast("Registro apagado");
   });
 
   /* ---------- Util ---------- */
+  function empty(title, text) {
+    return `<div class="empty"><img src="assets/img/gather-mark-cyan.png" alt=""><b>${esc(title)}</b><span>${text}</span></div>`;
+  }
+  function clock() { $("#clock").textContent = new Date().toLocaleTimeString("pt-BR"); }
+  clock(); setInterval(clock, 1000);
   function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
   $$("[data-copy]").forEach((b) => b.addEventListener("click", () => copy($(b.dataset.copy).textContent)));
 
@@ -606,5 +625,19 @@
   if (!activity.length) log("Gather 0.1 iniciada. Console pronto.", "cy");
   updateCounts();
   startMon();
-  go(location.hash.slice(1) || "visao");
+  go(location.hash.slice(1) || "criar");
+
+  /* ---------- Inicialização (boot) ---------- */
+  (function boot() {
+    const el = $("#boot"); if (!el) return;
+    const steps = ["inicializando motor de APIs", "carregando catálogo", "verificando credenciais", "conectando às IAs", "gather online"];
+    let i = 0;
+    const next = () => {
+      $("#boot-status").textContent = steps[i];
+      $("#boot-bar").style.width = ((i + 1) / steps.length) * 100 + "%";
+      if (i === steps.length - 1) { el.classList.add("online"); setTimeout(() => el.classList.add("done"), 700); return; }
+      i++; setTimeout(next, 380);
+    };
+    next();
+  })();
 })();
